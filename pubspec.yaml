@@ -1,5 +1,5 @@
 name: pyramid_bloxx
-description: A classic pyramid block stacking game for iOS
+description: Pyramid Bloxx - Egyptian block stacking game
 version: 1.0.0+1
 
 environment:
@@ -10,6 +10,7 @@ dependencies:
     sdk: flutter
   shared_preferences: ^2.2.2
   google_fonts: ^6.1.0
+  flame: ^1.18.0
 
 dev_dependencies:
   flutter_test:
@@ -18,4 +19,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-
+  assets:
+    - assets/
