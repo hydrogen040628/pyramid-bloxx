@@ -6,14 +6,14 @@ enum GameState { idle, playing, dropping, gameOver }
 class Block {
   final double x;
   final double width;
-  final double y;
+  final int row; // row index in tower (0 = base)
   final Color color;
   final bool isPerfect;
 
   const Block({
     required this.x,
     required this.width,
-    required this.y,
+    required this.row,
     required this.color,
     this.isPerfect = false,
   });
@@ -24,14 +24,14 @@ class Block {
   Block copyWith({
     double? x,
     double? width,
-    double? y,
+    int? row,
     Color? color,
     bool? isPerfect,
   }) {
     return Block(
       x: x ?? this.x,
       width: width ?? this.width,
-      y: y ?? this.y,
+      row: row ?? this.row,
       color: color ?? this.color,
       isPerfect: isPerfect ?? this.isPerfect,
     );
@@ -84,7 +84,7 @@ class GameModel {
     placedBlocks.add(Block(
       x: 0.225,
       width: initialBlockWidth,
-      y: 0,
+      row: 0,
       color: blockColors[0],
     ));
 
@@ -99,7 +99,7 @@ class GameModel {
     movingBlock = Block(
       x: 0.0,
       width: newWidth,
-      y: topBlock.y + 1,
+      row: topBlock.row + 1,
       color: currentColor,
     );
     swingT = 0.0;
@@ -141,6 +141,8 @@ class GameModel {
       state = GameState.gameOver;
       lastDropResult = "miss";
       combo = 0;
+      movingBlock = null;
+      if (score > highScore) highScore = score;
       return "miss";
     }
 
@@ -156,7 +158,7 @@ class GameModel {
       placedBlocks.add(Block(
         x: top.x + (top.width - current.width) / 2,
         width: current.width,
-        y: current.y,
+        row: current.row,
         color: current.color,
         isPerfect: true,
       ));
@@ -178,7 +180,7 @@ class GameModel {
       placedBlocks.add(Block(
         x: overlapLeft,
         width: trimmedWidth,
-        y: current.y,
+        row: current.row,
         color: current.color,
       ));
     }
