@@ -69,11 +69,8 @@ class _HomeScreenState extends State<HomeScreen>
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Stars decoration
                 const _StarsDecoration(),
                 const SizedBox(height: 20),
-
-                // Pyramid illustration
                 AnimatedBuilder(
                   animation: _pyramidAnim,
                   builder: (context, child) {
@@ -83,10 +80,7 @@ class _HomeScreenState extends State<HomeScreen>
                     );
                   },
                 ),
-
                 const SizedBox(height: 30),
-
-                // Title
                 AnimatedBuilder(
                   animation: _titleAnim,
                   builder: (context, child) {
@@ -96,10 +90,7 @@ class _HomeScreenState extends State<HomeScreen>
                     );
                   },
                 ),
-
                 const SizedBox(height: 16),
-
-                // High score
                 if (_highScore > 0)
                   Container(
                     padding: const EdgeInsets.symmetric(
@@ -128,10 +119,7 @@ class _HomeScreenState extends State<HomeScreen>
                       ],
                     ),
                   ),
-
                 const SizedBox(height: 50),
-
-                // Play button
                 _PlayButton(onTap: () async {
                   await Navigator.push(
                     context,
@@ -140,10 +128,7 @@ class _HomeScreenState extends State<HomeScreen>
                   );
                   _loadHighScore();
                 }),
-
                 const SizedBox(height: 30),
-
-                // How to play
                 const Text(
                   'TAP TO STACK • PERFECT TIMING = BONUS',
                   style: TextStyle(
@@ -174,7 +159,7 @@ class _StarsDecoration extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 4),
           child: Icon(
             Icons.star,
-            color: const Color(0xFFD4A017).withOpacity(0.3 + i * 0.1),
+            color: const Color(0xFFD4A017).withValues(alpha: 0.3 + i * 0.1),
             size: 16 + i * 2.0,
           ),
         ),
@@ -201,14 +186,13 @@ class _PyramidIllustration extends StatelessWidget {
 class _PyramidPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    final layers = [
-      // (relativeWidth, color)
-      (1.0, const Color(0xFFD4A017)),
-      (0.82, const Color(0xFFE8C547)),
-      (0.64, const Color(0xFFD4A017)),
-      (0.46, const Color(0xFFE8C547)),
-      (0.28, const Color(0xFFD4A017)),
-      (0.12, const Color(0xFFFFD700)),
+    const layers = [
+      (1.0, Color(0xFFD4A017)),
+      (0.82, Color(0xFFE8C547)),
+      (0.64, Color(0xFFD4A017)),
+      (0.46, Color(0xFFE8C547)),
+      (0.28, Color(0xFFD4A017)),
+      (0.12, Color(0xFFFFD700)),
     ];
 
     const blockHeight = 20.0;
@@ -225,18 +209,15 @@ class _PyramidPainter extends CustomPainter {
         const Radius.circular(4),
       );
 
-      final paint = Paint()..color = color;
-      canvas.drawRRect(rect, paint);
+      canvas.drawRRect(rect, Paint()..color = color);
 
-      // Shine effect
-      final shinePaint = Paint()
-        ..color = Colors.white.withOpacity(0.15)
-        ..style = PaintingStyle.fill;
-      final shineRect = RRect.fromRectAndRadius(
-        Rect.fromLTWH(left, top, blockW, blockHeight / 2.5),
-        const Radius.circular(4),
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(
+          Rect.fromLTWH(left, top, blockW, blockHeight / 2.5),
+          const Radius.circular(4),
+        ),
+        Paint()..color = Colors.white.withValues(alpha: 0.15),
       );
-      canvas.drawRRect(shineRect, shinePaint);
     }
   }
 
@@ -260,7 +241,7 @@ class _TitleText extends StatelessWidget {
             letterSpacing: 8,
             shadows: [
               Shadow(
-                color: const Color(0xFFD4A017).withOpacity(0.5),
+                color: const Color(0xFFD4A017).withValues(alpha: 0.5),
                 blurRadius: 20,
                 offset: const Offset(0, 4),
               ),
@@ -276,7 +257,7 @@ class _TitleText extends StatelessWidget {
             letterSpacing: 12,
             shadows: [
               Shadow(
-                color: const Color(0xFFE8C547).withOpacity(0.5),
+                color: const Color(0xFFE8C547).withValues(alpha: 0.5),
                 blurRadius: 20,
                 offset: const Offset(0, 4),
               ),
@@ -340,7 +321,7 @@ class _PlayButtonState extends State<_PlayButton>
               borderRadius: BorderRadius.circular(32),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFFD4A017).withOpacity(0.5),
+                  color: const Color(0xFFD4A017).withValues(alpha: 0.5),
                   blurRadius: 20,
                   spreadRadius: 2,
                 ),
