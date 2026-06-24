@@ -12,7 +12,8 @@ class GameScreen extends StatefulWidget {
   State<GameScreen> createState() => _GameScreenState();
 }
 
-class _GameScreenState extends State<GameScreen> {
+class _GameScreenState extends State<GameScreen>
+    with SingleTickerProviderStateMixin {
   final GameModel _game = GameModel();
   Timer? _gameLoop;
   DateTime _lastUpdate = DateTime.now();
@@ -36,10 +37,10 @@ class _GameScreenState extends State<GameScreen> {
     _gameLoop?.cancel();
     _lastUpdate = DateTime.now();
     _gameLoop = Timer.periodic(const Duration(milliseconds: 16), (_) {
+      if (!mounted) return;
       final now = DateTime.now();
       final dt = now.difference(_lastUpdate).inMilliseconds / 1000.0;
       _lastUpdate = now;
-      if (!mounted) return;
       setState(() => _game.update(dt.clamp(0.0, 0.1)));
       if (_game.isGameOver) {
         _gameLoop?.cancel();
@@ -158,7 +159,7 @@ class _GameScreenState extends State<GameScreen> {
             child: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.1),
+                color: Colors.white.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: const Icon(Icons.arrow_back_ios,
@@ -205,7 +206,10 @@ class _GameScreenState extends State<GameScreen> {
                     : const Color(0xFF90EE90),
             fontSize: 28,
             fontWeight: FontWeight.w900,
-            shadows: [Shadow(color: Colors.black.withOpacity(0.8), blurRadius: 10)],
+            shadows: [
+              Shadow(
+                  color: Colors.black.withValues(alpha: 0.8), blurRadius: 10)
+            ],
           ),
         ),
       ),
@@ -220,7 +224,7 @@ class _GameScreenState extends State<GameScreen> {
       child: Center(
         child: Text('TAP TO DROP',
             style: TextStyle(
-                color: const Color(0xFFD4A017).withOpacity(0.6),
+                color: const Color(0xFFD4A017).withValues(alpha: 0.6),
                 fontSize: 14,
                 letterSpacing: 3)),
       ),
@@ -251,7 +255,7 @@ class GamePainter extends CustomPainter {
   }
 
   void _drawStars(Canvas canvas, Size size) {
-    final paint = Paint()..color = Colors.white.withOpacity(0.5);
+    final paint = Paint()..color = Colors.white.withValues(alpha: 0.5);
     final positions = [
       Offset(size.width * 0.08, size.height * 0.04),
       Offset(size.width * 0.82, size.height * 0.03),
@@ -271,10 +275,11 @@ class GamePainter extends CustomPainter {
 
   void _drawSand(Canvas canvas, Size size) {
     final sandPaint = Paint()..color = const Color(0xFF6B3E0F);
-    canvas.drawRect(Rect.fromLTWH(0, size.height - 30, size.width, 30), sandPaint);
+    canvas.drawRect(
+        Rect.fromLTWH(0, size.height - 30, size.width, 30), sandPaint);
 
     final linePaint = Paint()
-      ..color = const Color(0xFF8B5E1A).withOpacity(0.5)
+      ..color = const Color(0xFF8B5E1A).withValues(alpha: 0.5)
       ..strokeWidth = 1;
     for (int i = 0; i < 4; i++) {
       canvas.drawLine(
@@ -286,8 +291,8 @@ class GamePainter extends CustomPainter {
   }
 
   void _drawPlacedBlocks(Canvas canvas, Size size) {
-    for (int i = 0; i < game.placedBlocks.length; i++) {
-      _drawBlock(canvas, size, game.placedBlocks[i], _blockY(i, size), placed: true);
+    for (final block in game.placedBlocks) {
+      _drawBlock(canvas, size, block, _blockY(block.row, size), placed: true);
     }
   }
 
@@ -295,23 +300,25 @@ class GamePainter extends CustomPainter {
     final moving = game.movingBlock;
     if (moving == null) return;
 
-    // Ghost guide
+    // Ghost guide at landing position
     if (game.placedBlocks.isNotEmpty) {
       final top = game.placedBlocks.last;
-      final targetY = _blockY(top.y.toInt() + 1, size);
+      final ghostY = _blockY(top.row + 1, size);
       final ghostPaint = Paint()
-        ..color = moving.color.withOpacity(0.15);
+        ..color = moving.color.withValues(alpha: 0.15);
       canvas.drawRRect(
         RRect.fromRectAndRadius(
-          Rect.fromLTWH(moving.x * size.width, targetY,
-              moving.width * size.width, blockHeight),
+          Rect.fromLTWH(
+              moving.x * size.width, ghostY, moving.width * size.width, blockHeight),
           const Radius.circular(blockRadius),
         ),
         ghostPaint,
       );
     }
 
-    _drawBlock(canvas, size, moving, _blockY(moving.y.toInt(), size), placed: false);
+    // Moving block always drawn at top of visible area (row = placedBlocks.length)
+    final movingY = _blockY(moving.row, size);
+    _drawBlock(canvas, size, moving, movingY, placed: false);
   }
 
   void _drawBlock(Canvas canvas, Size size, Block block, double y,
@@ -327,7 +334,7 @@ class GamePainter extends CustomPainter {
         const Radius.circular(blockRadius),
       ),
       Paint()
-        ..color = Colors.black.withOpacity(0.3)
+        ..color = Colors.black.withValues(alpha: 0.3)
         ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 6),
     );
 
@@ -344,7 +351,7 @@ class GamePainter extends CustomPainter {
         Rect.fromLTWH(left + 2, y + 2, width - 4, blockHeight * 0.35),
         const Radius.circular(blockRadius - 2),
       ),
-      Paint()..color = Colors.white.withOpacity(placed ? 0.15 : 0.25),
+      Paint()..color = Colors.white.withValues(alpha: placed ? 0.15 : 0.25),
     );
 
     // Perfect glow
@@ -352,7 +359,7 @@ class GamePainter extends CustomPainter {
       canvas.drawRRect(
         rect,
         Paint()
-          ..color = const Color(0xFFFFD700).withOpacity(0.4)
+          ..color = const Color(0xFFFFD700).withValues(alpha: 0.4)
           ..style = PaintingStyle.stroke
           ..strokeWidth = 2
           ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4),
@@ -364,7 +371,7 @@ class GamePainter extends CustomPainter {
       canvas.drawRRect(
         rect,
         Paint()
-          ..color = Colors.white.withOpacity(0.4)
+          ..color = Colors.white.withValues(alpha: 0.4)
           ..style = PaintingStyle.stroke
           ..strokeWidth = 1.5,
       );
@@ -406,7 +413,7 @@ class _GameOverDialog extends StatelessWidget {
           border: Border.all(color: const Color(0xFFD4A017), width: 2),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFFD4A017).withOpacity(0.3),
+              color: const Color(0xFFD4A017).withValues(alpha: 0.3),
               blurRadius: 30,
               spreadRadius: 5,
             ),
@@ -418,7 +425,9 @@ class _GameOverDialog extends StatelessWidget {
             Text(
               isNewBest ? '🏆 NEW BEST!' : 'GAME OVER',
               style: TextStyle(
-                color: isNewBest ? const Color(0xFFFFD700) : const Color(0xFFD4A017),
+                color: isNewBest
+                    ? const Color(0xFFFFD700)
+                    : const Color(0xFFD4A017),
                 fontSize: 28,
                 fontWeight: FontWeight.w900,
                 letterSpacing: 3,
