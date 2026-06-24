@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flame/game.dart';
+import 'game/pyramid_game.dart';
 import 'screens/home_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
   ]);
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
@@ -25,14 +26,7 @@ class PyramidBloxxApp extends StatelessWidget {
     return MaterialApp(
       title: 'Pyramid Bloxx',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFFD4A017),
-          brightness: Brightness.dark,
-        ),
-        useMaterial3: true,
-        fontFamily: 'serif',
-      ),
+      theme: ThemeData.dark(),
       home: const HomeScreen(),
     );
   }
