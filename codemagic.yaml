@@ -10,34 +10,16 @@ workflows:
       - name: Get Flutter packages
         script: flutter pub get
       - name: Install pods
+        script: cd ios && pod install
+      - name: Build iOS release IPA (no codesign)
         script: |
-          find . -name "Podfile" -execdir pod install \;
-      - name: Build iOS (no codesign)
-        script: |
-          flutter build ios --release --no-codesign
-      - name: Create IPA
-        script: |
-          cd build/ios/iphoneos
-          mkdir -p Payload
-          cp -r Runner.app Payload/Runner.app
-          zip -r Pyramid_Bloxx.ipa Payload
+          flutter build ipa --release --no-codesign \
+            --dart-define=FLUTTER_BUILD_NAME=1.0.0 \
+            --dart-define=FLUTTER_BUILD_NUMBER=1
     artifacts:
-      - build/ios/iphoneos/*.ipa
-      - build/ios/iphoneos/Pyramid_Bloxx.ipa
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
     publishing:
       email:
         recipients:
           - your@email.com
-
-  # For development/testing with Expo-style hot reload
-  flutter-test:
-    name: Flutter Tests
-    environment:
-      flutter: stable
-    scripts:
-      - name: Get packages
-        script: flutter pub get
-      - name: Analyze
-        script: flutter analyze
-      - name: Run tests
-        script: flutter test
