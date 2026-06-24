@@ -1,0 +1,25 @@
+workflows:
+  ios-workflow:
+    name: Pyramid Bloxx iOS
+    max_build_duration: 60
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Get Flutter packages
+        script: flutter pub get
+      - name: Install pods
+        script: cd ios && pod install
+      - name: Build iOS release IPA (no codesign)
+        script: |
+          flutter build ipa --release --no-codesign \
+            --dart-define=FLUTTER_BUILD_NAME=1.0.0 \
+            --dart-define=FLUTTER_BUILD_NUMBER=1
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+    publishing:
+      email:
+        recipients:
+          - your@email.com
